@@ -27,7 +27,18 @@ memory and the context window is scratch space. In-place summarization is lossy 
 compounds — a summary of a summary of a summary — while a structured file re-derived from
 the live session each time does not.
 
-See [`skills/README.md`](skills/README.md) for installation.
+Both are agent-agnostic. Claude Code, Codex, Kimi, and OpenCode have all converged on the
+same `SKILL.md` format, so the *files* are portable — but each looks in different
+directories, and Codex only reads user-level ones. `skills/install.sh` handles the spread:
+
+```bash
+./skills/install.sh                  # every agent detected on this machine
+./skills/install.sh /path/to/repo    # plus that repo's .agents/skills/
+```
+
+Because they don't name any vendor-specific command, a session handed off under one agent
+can be resumed under another. See [`skills/README.md`](skills/README.md) for the full
+discovery table and manual install.
 
 ## Contributing
 

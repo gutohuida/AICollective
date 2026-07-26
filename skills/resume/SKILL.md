@@ -1,6 +1,6 @@
 ---
 name: resume
-description: Rehydrate context from a handoff file written by /handoff and continue the work. Use at the start of a fresh session, after /clear or /compact, or when the user says "resume", "pick up where we left off", "continue from the handoff", or points at a handoff file. Pairs with /handoff.
+description: Rehydrate context from a handoff file written by /handoff and continue the work. Use at the start of a fresh session, after clearing or compacting, or when the user says "resume", "pick up where we left off", "continue from the handoff", or points at a handoff file. Pairs with /handoff.
 ---
 
 Restore working context from a durable handoff file, verify it still describes reality, and
@@ -8,18 +8,26 @@ continue.
 
 **Usage:** `/resume` (loads the latest) or `/resume <path-to-handoff.md>`.
 
+Agent-agnostic: the handoff is plain markdown, so a session started by one CLI agent can be
+resumed by another. The handoff records which agent wrote it — note it if the tooling
+assumptions differ from yours.
+
 ## Step 1 — Locate the handoff
 
-If a path was given as an argument, use it. Otherwise:
+If a path was given as an argument, use it. Otherwise search every known location — the
+previous session may have run under a different agent:
 
 ```bash
-cat .claude/handoffs/LATEST.md 2>/dev/null
-ls -t .claude/handoffs/*.md 2>/dev/null | head -5
+cat .handoffs/LATEST.md .claude/handoffs/LATEST.md .agents/handoffs/LATEST.md 2>/dev/null
+ls -t .handoffs/*.md .claude/handoffs/*.md .agents/handoffs/*.md 2>/dev/null | head -5
 ```
 
 Read the newest one. If several are recent, read the newest and check its
 `**Previous handoff:**` link — follow the chain back only as far as you need for the current
 next-step, usually zero or one hop.
+
+If handoffs turn up in more than one directory, say so — the chain has been split, and the
+newest file may not be the newest *work*. Reconcile by timestamp before trusting either.
 
 If no handoff exists anywhere, say so plainly and ask what the user wants to work on. Do not
 invent context or guess from git history alone.
@@ -37,9 +45,9 @@ git status --short
 Compare against the handoff's `## Git state`:
 
 - **Same branch, same HEAD, same dirty files** → trustworthy, proceed.
-- **HEAD moved forward** → someone (possibly another session) committed since. Run
-  `git log <handoff-sha>..HEAD --stat` and reconcile: the handoff's "next steps" may already
-  be done. Flag anything that no longer applies.
+- **HEAD moved forward** → someone (possibly another session, possibly another agent)
+  committed since. Run `git log <handoff-sha>..HEAD --stat` and reconcile: the handoff's
+  "next steps" may already be done. Flag anything that no longer applies.
 - **Different branch** → say so before doing anything. Confirm which branch the work belongs on.
 - **Files listed as touched are now clean/absent** → the work was committed, stashed, or
   reverted. Determine which; do not assume.
@@ -82,4 +90,4 @@ proceeding on a guess.
 When this resumed session in turn fills up, run `/handoff` again. It will read this handoff
 and carry forward what is still true — so state is always re-derived from the live session
 plus a durable file, never from a summary of a summary. That is what stops quality decaying
-across a long chain of sessions.
+across a long chain of sessions, and it holds across agent switches too.
