@@ -1,0 +1,6 @@
+# Shell scripts must keep LF endings or they break on Linux/macOS
+# with "bad interpreter: /usr/bin/env bash^M"
+*.sh text eol=lf
+
+# Markdown is checked out with native endings
+*.md text
