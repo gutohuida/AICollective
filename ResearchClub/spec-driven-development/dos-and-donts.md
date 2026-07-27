@@ -28,9 +28,12 @@ Standard). See those files for full sourcing/citations.
    *(Cline; WHATWG HTML §1.11)*
 7. **State explicit non-goals/out-of-scope items**, not just omissions.
    *(WHATWG HTML §1.5)*
-8. **Decompose into small, independently deliverable units** (e.g. one user
-   story = one MVP increment; mark tasks `[P]` when they can run in
-   parallel). *(Spec Kit tasks-template)*
+8. **Decompose by capability, not technical layer.** Keep durable system context
+   (principles, domain map, quality attributes, shared contracts) separate from a
+   shallow epic roadmap and independently deliverable feature specs. Each feature
+   should have a demonstrable outcome, acceptance tests, an explicit boundary, and
+   a dependency position; mark parallel tasks `[P]` only within that boundary.
+   *(Spec Kit Spec of Specs; DDD bounded contexts)*
 9. **Trace tasks back to requirements by ID** (e.g. `_Requirements: 1.1,
    3.3_`) for auditability. *(Spec Kit, Kiro)*
 10. **Make success criteria measurable** ("handles 1000 concurrent users"
@@ -51,6 +54,11 @@ Standard). See those files for full sourcing/citations.
     so an agent doesn't treat rationale/illustration as binding
     requirements. *(WHATWG HTML typographic conventions)*
 
+16. **Choose format by audience and job.** Prefer compact Markdown for agent-facing,
+    versioned source specs; add semantic, self-contained HTML when humans benefit from
+    rendered review, approval, navigation, or complex presentation. *(Anthropic 2026;
+    Microsoft Research table-format study)*
+
 ## Don't
 
 1. **Don't bake implementation/tech-stack details into the spec.** That
@@ -61,8 +69,9 @@ Standard). See those files for full sourcing/citations.
    a concrete, checkable definition.
 4. **Don't add speculative "might need later" features/requirements** —
    every requirement should trace to a concrete need.
-5. **Don't produce monolithic, non-decomposable specs** — break into
-   independently testable/deliverable pieces.
+5. **Don't produce monolithic, non-decomposable specs** — or split them into
+   frontend/API/database documents. Use a roadmap of vertical, independently
+   testable capability slices with explicit sibling boundaries instead.
 6. **Don't include non-coding tasks** (deployment, user training, marketing)
    in an agent's task list — keep task lists scoped to what the agent
    actually executes.
@@ -77,3 +86,6 @@ Standard). See those files for full sourcing/citations.
    mode in multi-agent setups).
 10. **Don't mix normative requirements and illustrative examples/notes in
     the same undifferentiated prose block.**
+11. **Don't feed raw webpage HTML to agents as a default.** Strip presentation noise or
+    provide the equivalent Markdown; use semantic HTML only where its structure is part
+    of the information being reasoned about.

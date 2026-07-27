@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spec: CHANGE NAME</title>
+<meta name="description" content="One sentence: what this change does.">
+<!-- Machine contract. Keep a project's existing prefix (e.g. aw-spec-status) if it has one. -->
+<meta name="spec-kind" content="change-spec">
+<meta name="spec-name" content="change-name">
+<meta name="spec-status" content="draft">
+<meta name="spec-approved-by" content="">
+<meta name="spec-approved-at" content="">
+<meta name="spec-generated-at" content="YYYY-MM-DD">
+<style>
+  /* 1. Light defaults — also what a plain file open uses. */
+  :root {
+    color-scheme: light dark;
+    --bg:#ffffff; --surface:#f7f8fa; --surface-2:#eef1f5; --border:#d9dee6;
+    --text:#1b1f24; --text-dim:#57606a; --accent:#4c56d6; --accent-soft:#eceefd;
+    --normative:#0b6b3a; --normative-soft:#e8f6ee; --note:#0969da; --note-soft:#ddf0ff;
+    --warn:#9a6700; --warn-soft:#fff4d6; --example:#6639ba; --example-soft:#f2ecfb;
+    --danger:#cf222e; --danger-soft:#ffebe9;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  /* 2. Standalone dark mode. */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:#0d1117; --surface:#161b22; --surface-2:#1c2230; --border:#2d333b;
+      --text:#e6edf3; --text-dim:#9198a1; --accent:#7c85ff; --accent-soft:#1d2140;
+      --normative:#3fb950; --normative-soft:#12261a; --note:#58a6ff; --note-soft:#0d2136;
+      --warn:#d29922; --warn-soft:#2b2413; --example:#a371f7; --example-soft:#21193a;
+      --danger:#f85149; --danger-soft:#3a2020;
+    }
+  }
+  /* 3. Explicit overrides — an embedding viewer stamps data-theme and must win. */
+  :root[data-theme="light"] {
+    --bg:#ffffff; --surface:#f7f8fa; --surface-2:#eef1f5; --border:#d9dee6;
+    --text:#1b1f24; --text-dim:#57606a; --accent:#4c56d6; --accent-soft:#eceefd;
+    --normative:#0b6b3a; --normative-soft:#e8f6ee; --note:#0969da; --note-soft:#ddf0ff;
+    --warn:#9a6700; --warn-soft:#fff4d6; --example:#6639ba; --example-soft:#f2ecfb;
+    --danger:#cf222e; --danger-soft:#ffebe9;
+  }
+  :root[data-theme="dark"] {
+    --bg:#0d1117; --surface:#161b22; --surface-2:#1c2230; --border:#2d333b;
+    --text:#e6edf3; --text-dim:#9198a1; --accent:#7c85ff; --accent-soft:#1d2140;
+    --normative:#3fb950; --normative-soft:#12261a; --note:#58a6ff; --note-soft:#0d2136;
+    --warn:#d29922; --warn-soft:#2b2413; --example:#a371f7; --example-soft:#21193a;
+    --danger:#f85149; --danger-soft:#3a2020;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 1rem; }
+  body { margin:0; display:flex; align-items:flex-start; min-height:100vh;
+    font-family: var(--sans); font-size:16px; line-height:1.6; color:var(--text); background:var(--bg); }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code, pre { font-family: var(--mono); font-size: 0.9em; }
+  code { background: var(--surface-2); padding: 0.1em 0.35em; border-radius: 4px; }
+  pre { background: var(--surface); border:1px solid var(--border); border-radius:8px; padding:1rem; overflow-x:auto; }
+
+  nav.toc { position:sticky; top:0; align-self:flex-start; width:250px; flex:0 0 250px; height:100vh;
+    overflow-y:auto; padding:1.25rem 0.85rem; background:var(--surface); border-right:1px solid var(--border); }
+  nav.toc p.toc-title { margin:0 0 .5rem .5rem; font-size:.75rem; text-transform:uppercase;
+    letter-spacing:.06em; color:var(--text-dim); }
+  nav.toc ol { list-style:none; margin:0; padding:0; }
+  nav.toc a { display:block; padding:.3rem .5rem; border-radius:6px; font-size:.88rem; color:var(--text-dim); }
+  nav.toc a:hover { background:var(--surface-2); color:var(--text); text-decoration:none; }
+  nav.toc a.active { background:var(--accent-soft); color:var(--accent); font-weight:600; }
+
+  main { flex:1 1 auto; min-width:0; max-width:900px; margin:0 auto; padding:0 2rem 5rem; }
+  header.spec-header { position:sticky; top:0; z-index:2; background:var(--bg);
+    padding:1.5rem 0 1rem; border-bottom:1px solid var(--border); margin-bottom:1.5rem; }
+  header.spec-header h1 { margin:0 0 .5rem; font-size:1.8rem; }
+  .status { display:inline-block; padding:.25rem .7rem; border-radius:999px; font-size:.78rem; font-weight:600; }
+  .status.draft { background:var(--warn-soft); color:var(--warn); }
+  .status.approved { background:var(--normative-soft); color:var(--normative); }
+  .progress-track { height:6px; border-radius:999px; background:var(--surface-2); margin-top:.75rem; overflow:hidden; }
+  .progress-fill { height:100%; width:0%; background:var(--accent); transition:width .2s ease; }
+  .progress-label { margin:.35rem 0 0; font-size:.8rem; color:var(--text-dim); }
+
+  section { margin:2.5rem 0; scroll-margin-top:5rem; }
+  section > h2 { font-size:1.4rem; border-bottom:1px solid var(--border); padding-bottom:.3rem; }
+  table { border-collapse:collapse; width:100%; margin:1rem 0; font-size:.93rem; }
+  th, td { border:1px solid var(--border); padding:.5rem .65rem; text-align:left; vertical-align:top; }
+  th { background: var(--surface-2); }
+  .table-scroll { overflow-x:auto; }
+
+  .badge { display:inline-block; padding:.1rem .5rem; border-radius:4px; font-size:.72rem; font-weight:700; }
+  .badge-must { background:var(--danger-soft); color:var(--danger); }
+  .badge-should { background:var(--warn-soft); color:var(--warn); }
+  .badge-may { background:var(--surface-2); color:var(--text-dim); }
+
+  .note, .example, .warning, .issue { border-left:4px solid var(--border); border-radius:0 6px 6px 0;
+    padding:.55rem .85rem; margin:1rem 0; background:var(--surface); }
+  .note { border-color:var(--note); background:var(--note-soft); }
+  .example { border-color:var(--example); background:var(--example-soft); }
+  .warning { border-color:var(--warn); background:var(--warn-soft); }
+  .issue { border-color:var(--danger); background:var(--danger-soft); }
+
+  ol.algorithm { background:var(--surface); border:1px solid var(--border); border-left:4px solid var(--accent);
+    border-radius:6px; padding:.85rem 1rem .85rem 2.4rem; }
+  ol.algorithm li { margin:.25rem 0; }
+  ul.tasks { list-style:none; padding-left:0; }
+  li.task { margin:.4rem 0; padding:.45rem .65rem; border-radius:6px; background:var(--surface); }
+  li.task[data-status="done"] .task-desc { color:var(--normative); text-decoration:line-through; }
+  .req-refs { color:var(--text-dim); font-size:.85em; }
+
+  @media (max-width: 820px) {
+    nav.toc { display:none; }
+    main { padding:0 1rem 4rem; }
+  }
+</style>
+</head>
+<body>
+<nav class="toc" aria-label="Table of contents">
+  <p class="toc-title">Contents</p>
+  <ol>
+    <li><a href="#summary">1. Summary</a></li>
+    <li><a href="#problem">2. Problem</a></li>
+    <li><a href="#scope">3. Scope &amp; Non-Goals</a></li>
+    <li><a href="#conformance">4. Conformance</a></li>
+    <li><a href="#requirements">5. Requirements</a></li>
+    <li><a href="#acceptance">6. Acceptance Criteria</a></li>
+    <li><a href="#algorithms">7. Behavior</a></li>
+    <li><a href="#design">8. Design</a></li>
+    <li><a href="#evidence">9. Evidence &amp; Limits</a></li>
+    <li><a href="#lifecycle">10. Spec Lifecycle</a></li>
+    <li><a href="#team">11. Team &amp; Ownership</a></li>
+    <li><a href="#tasks">12. Tasks</a></li>
+    <li><a href="#open-questions">13. Open Questions</a></li>
+    <li><a href="#approval">14. Approval</a></li>
+  </ol>
+</nav>
+
+<main>
+  <header class="spec-header">
+    <h1>Specification: CHANGE NAME</h1>
+    <p><span class="status draft">DRAFT — awaiting approval</span></p>
+    <div class="progress-track"><div class="progress-fill" data-progress-fill></div></div>
+    <p class="progress-label" data-progress-label>0 / 0 tasks complete</p>
+  </header>
+
+  <section id="summary">
+    <h2>1. Summary</h2>
+    <p>One or two sentences: what this change does. If it implements a roadmap row, name the
+    roadmap and the row ID here.</p>
+  </section>
+
+  <section id="problem">
+    <h2>2. Problem</h2>
+    <p>What hurts today, and for whom. Written so the reader can judge whether the requirements
+    below actually solve it.</p>
+  </section>
+
+  <section id="scope">
+    <h2>3. Scope &amp; Non-Goals</h2>
+    <h3>In scope</h3>
+    <ul><li>The capability this change delivers, stated as an outcome someone can demonstrate.</li></ul>
+    <h3>Non-goals</h3>
+    <ul><li>Explicitly out of scope. State these — do not rely on omission.</li></ul>
+  </section>
+
+  <section id="conformance">
+    <h2>4. Conformance</h2>
+    <p>Key words MUST, MUST NOT, SHOULD, and MAY are to be interpreted as in RFC 2119.</p>
+    <h3>Producer requirements (allowed input)</h3>
+    <ul><li>What a user, client, or upstream system is allowed to supply.</li></ul>
+    <h3>Consumer requirements (required behavior)</h3>
+    <ul><li>How this system must act in response — including on malformed input.</li></ul>
+  </section>
+
+  <section id="requirements">
+    <h2>5. Requirements</h2>
+    <div class="table-scroll">
+    <table>
+      <thead><tr><th>ID</th><th>Level</th><th>Requirement</th></tr></thead>
+      <tbody>
+        <tr id="FR-1">
+          <td>FR-1</td>
+          <td><span class="badge badge-must">MUST</span></td>
+          <td>A testable assertion. The system MUST do something specific enough that a test
+          can pass or fail on it.</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="note"><strong>Note:</strong> non-normative rationale — why a rule exists, so it
+    generalizes to cases this spec did not anticipate.</p>
+  </section>
+
+  <section id="acceptance">
+    <h2>6. Acceptance Criteria</h2>
+    <div class="scenario">
+      <p><strong>AC-1</strong> (satisfies <a href="#FR-1">FR-1</a>)</p>
+      <ul>
+        <li><strong>Given</strong> the starting state.</li>
+        <li><strong>When</strong> the action happens.</li>
+        <li><strong>Then</strong> a measurable, binary outcome.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="algorithms">
+    <h2>7. Behavior</h2>
+    <ol class="algorithm">
+      <li>First step.</li>
+      <li>If a condition holds, do this and stop.</li>
+      <li>Otherwise, continue.</li>
+    </ol>
+    <p class="example"><strong>Example:</strong> illustrative only — one valid case, not the
+    only allowed one.</p>
+  </section>
+
+  <section id="design">
+    <h2>8. Design</h2>
+    <p>The approach in two to four sentences. Everything implementation-specific belongs here,
+    not in the requirements.</p>
+    <pre>ASCII architecture sketch, if it helps.</pre>
+    <h3>Key decisions</h3>
+    <ul><li><strong>Decision</strong>: the reason it was chosen over the alternative.</li></ul>
+    <h3>Security considerations</h3>
+    <ul><li>Permissions, data flows, new dependencies, input handling.</li></ul>
+  </section>
+
+  <section id="evidence">
+    <h2>9. Evidence &amp; Limits</h2>
+    <ul>
+      <li><strong>Checked:</strong> the tests, contracts, fixtures, schemas, configuration, and
+      runbooks actually inspected, and what each validates.</li>
+      <li><strong>Unverified:</strong> behavior that is inferred, untested, or contradictory.</li>
+    </ul>
+    <p class="warning"><strong>Warning:</strong> a passing suite demonstrates only the behavior
+    it covers. Do not claim completeness the evidence does not support.</p>
+  </section>
+
+  <section id="lifecycle">
+    <h2>10. Spec Lifecycle</h2>
+    <p>Persistence model: <strong>flow-back</strong> / <strong>flow-forward</strong> /
+    <strong>living spec</strong> — pick one and delete the others. State the reconciliation
+    rule: who updates what, when, after implementation.</p>
+  </section>
+
+  <section id="team">
+    <h2>11. Team &amp; Ownership</h2>
+    <div class="table-scroll">
+    <table>
+      <thead><tr><th>Role</th><th>Owner</th><th>Responsibility</th><th>Status</th></tr></thead>
+      <tbody><tr><td>role</td><td>name</td><td>what they own here</td><td>OK / missing</td></tr></tbody>
+    </table>
+    </div>
+  </section>
+
+  <section id="tasks">
+    <h2>12. Tasks</h2>
+    <p class="progress" data-total="1" data-done="0">0 / 1 tasks complete</p>
+    <h3>role — owner</h3>
+    <ul class="tasks">
+      <li class="task" data-task-id="T1" data-status="pending" data-role="role"
+          data-agent="owner" data-requirements="FR-1">
+        <input type="checkbox" disabled>
+        <span class="task-desc">One concrete unit of work.</span>
+        <span class="req-refs">(<a href="#FR-1">FR-1</a>)</span>
+      </li>
+    </ul>
+  </section>
+
+  <section id="open-questions">
+    <h2>13. Open Questions</h2>
+    <p>None. While an ambiguity is unresolved it appears here as a bracketed clarification
+    marker inside an <code>issue</code> block, and the spec must not be approved.</p>
+  </section>
+
+  <section id="approval">
+    <h2>14. Approval</h2>
+    <p>This specification requires explicit human approval before implementation.</p>
+    <p><strong>Status:</strong> <code>draft</code> ·
+       <strong>Approved by:</strong> — · <strong>on:</strong> —</p>
+  </section>
+</main>
+
+<script>
+(function () {
+  // A sandboxed iframe without allow-same-origin can blank out on native hash navigation.
+  // Intercept every same-document anchor click and scroll manually instead.
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a) return;
+    var id = a.getAttribute('href').slice(1);
+    var target = id ? document.getElementById(id) : null;
+    e.preventDefault();
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  // Progress bar derived from the task elements themselves, not the static text.
+  var tasks = document.querySelectorAll('li.task');
+  var done = document.querySelectorAll('li.task[data-status="done"]').length;
+  var fill = document.querySelector('[data-progress-fill]');
+  var label = document.querySelector('[data-progress-label]');
+  if (fill) fill.style.width = (tasks.length ? Math.round(done / tasks.length * 100) : 0) + '%';
+  if (label) label.textContent = done + ' / ' + tasks.length + ' tasks complete';
+
+  // TOC scroll-spy.
+  var links = Array.prototype.slice.call(document.querySelectorAll('nav.toc a'));
+  var sections = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); })
+                      .filter(Boolean);
+  if ('IntersectionObserver' in window && sections.length) {
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        links.forEach(function (l) { l.classList.remove('active'); });
+        var link = document.querySelector('nav.toc a[href="#' + entry.target.id + '"]');
+        if (link) link.classList.add('active');
+      });
+    }, { rootMargin: '-10% 0px -80% 0px' });
+    sections.forEach(function (s) { obs.observe(s); });
+  }
+})();
+</script>
+</body>
+</html>

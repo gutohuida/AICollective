@@ -7,10 +7,16 @@ Agent skills — a folder containing a `SKILL.md` with YAML frontmatter (`name`,
 |---|---|---|
 | [`handoff`](handoff/) | `/handoff` | `/resume` |
 | [`resume`](resume/) | `/resume [path]` | `/handoff` |
+| [`html-spec`](html-spec/) | `/html-spec [path]` | — |
 
-Both are written to be **agent-agnostic**: no vendor-specific commands, no assumption about
+All are written to be **agent-agnostic**: no vendor-specific commands, no assumption about
 which CLI is running them. A session started under one agent can be handed off and resumed
 under another.
+
+`html-spec` ships support files alongside its `SKILL.md` — `conventions.md` (the rubric and
+its sources), `template.html` (a clean skeleton that passes its own checks), and
+`validate.py` (stdlib-only structural checker, `python validate.py spec.html`). Skill
+directories are copied whole, so those travel with it.
 
 ## Where skills are discovered
 
