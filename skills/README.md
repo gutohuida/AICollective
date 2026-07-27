@@ -7,6 +7,7 @@ Agent skills — a folder containing a `SKILL.md` with YAML frontmatter (`name`,
 |---|---|---|
 | [`handoff`](handoff/) | `/handoff` | `/resume` |
 | [`resume`](resume/) | `/resume [path]` | `/handoff` |
+| [`spec-rebuild`](spec-rebuild/) | `/spec-rebuild` | — |
 | [`html-spec`](html-spec/) | `/html-spec [path]` | — |
 
 All are written to be **agent-agnostic**: no vendor-specific commands, no assumption about

@@ -22,6 +22,7 @@ Planned sections, added when there's something real to put in them: `prompts/`,
 |---|---|
 | [`handoff`](skills/handoff/) | Write a durable, structured handoff file to disk before `/clear` or `/compact`, so session state survives a context reset. |
 | [`resume`](skills/resume/) | Rehydrate from a handoff file, verify it still matches the repo, and continue the work. |
+| [`spec-rebuild`](skills/spec-rebuild/) | Locate a project's specs (asking or searching), assess how rebuildable they are, and emit a concrete, best-practice Rebuild Brief with tests as the executable contract. |
 | [`html-spec`](skills/html-spec/) | Audit and improve an HTML specification, or write one from scratch — testable requirements with stable IDs, traceability from requirement to task, and a bundled structural validator. |
 
 `handoff` and `resume` are a pair. The idea behind them: the file on disk is the real
