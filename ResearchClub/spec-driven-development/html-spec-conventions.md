@@ -106,6 +106,13 @@ which sections must be read together before acting on any one of them.
 
 ## Caveats
 
+**HTML is not automatically the best agent-input format.** HTML is valuable when its
+semantic containers, rich tables, and browser rendering serve a real review or
+interoperability need. For ordinary agent context, Markdown usually expresses the same
+headings, lists, code, IDs, and cross-links with less markup overhead and simpler diffs.
+Use a Markdown source/map alongside an HTML review artifact when both audiences matter;
+see [`format-selection.md`](./format-selection.md) for the evidence and decision rule.
+
 The HTML spec optimizes for **long-term, multi-implementer interoperability**
 over decades, at the cost of being extremely long, dense, and slow to read
 in full — the opposite of the "concise, token-efficient" advice from

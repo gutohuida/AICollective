@@ -2,7 +2,9 @@
 
 ## Summary
 
-Spec-Driven Development (SDD) for AI coding agents has emerged as the dominant paradigm for structuring autonomous software engineering in 2025–2026. Rather than supplying ad-hoc prompts, teams now author *structured specification artifacts* — requirements documents, implementation plans, and task lists — that serve as the primary source of truth, with AI agents treating code as a derived, regenerable output. This report covers the canonical tooling (GitHub Spec Kit), the emerging cross-tool AGENTS.md standard, all major vendor-specific instruction files, Amazon Kiro's competing spec-driven IDE, and documented best practices.
+Spec-Driven Development (SDD) is a prominent, rapidly evolving approach to structuring work with AI coding agents. It uses structured artifacts — requirements, implementation plans, and task lists — to make intent reviewable and to guide implementation. It should not be presented as a proven dominant industry paradigm, nor should code be assumed to be safely regenerable from prose alone: the required level of fidelity depends on the specification, tests, data contracts, and operational configuration. This report covers representative tooling (GitHub Spec Kit), the cross-tool AGENTS.md convention, selected vendor instruction systems, Amazon Kiro, and documented practices.
+
+> **Verification update — 2026-07-27.** This report was checked against the linked vendors' current first-party documentation. Product behavior, supported integrations, and file locations change frequently; use the official links in this report and the installed tool's help as the source of truth for an implementation. Community repositories and recovered prompts are retained only as secondary evidence, never as authoritative product documentation. A fact-check pass on the same date corrected Windsurf's Spec Kit integration status, Kiro's steering inclusion modes, two citation errors, and flagged the Kiro details that rest on the recovered `Spec_Prompt.txt` rather than first-party docs.
 
 ---
 
@@ -12,7 +14,7 @@ Spec-Driven Development (SDD) for AI coding agents has emerged as the dominant p
 
 **Repository:** [`github/spec-kit`](https://github.com/github/spec-kit) (MIT License, actively maintained as of July 2026)
 
-GitHub Spec Kit is an open-source toolkit for implementing Spec-Driven Development with any AI coding agent. It is bootstrapped via the **`specify-cli`** Python package and is heavily influenced by the research of [John Lam](https://github.com/jflam).
+GitHub Spec Kit is an open-source toolkit for implementing Spec-Driven Development with many AI coding agents. It is bootstrapped via the **`specify-cli`** Python package and is heavily influenced by the research of [John Lam](https://github.com/jflam).
 
 **Self-description** (`github/spec-kit:README.md:1-9`):
 > *"An open source toolkit for building high-quality software with any AI coding agent — a ready-to-use spec-driven process (or bring your own), endlessly extensible, community-driven, and built for your whole organization."*
@@ -37,6 +39,8 @@ Spec Kit exposes slash commands (and agent-skill equivalents) for a fully ordere
 /speckit.constitution → /speckit.specify → /speckit.clarify → /speckit.plan
   → /speckit.checklist → /speckit.tasks → /speckit.analyze → /speckit.implement → /speckit.converge
 ```
+
+A tenth command, `/speckit.taskstoissues` (convert `tasks.md` into GitHub issues), exists outside the core pipeline. The toolkit also ships extensions, presets, bundles, and `specify self check/upgrade`, so treat the pipeline as the core loop rather than the full surface area.
 
 | Command | Purpose |
 |---|---|
@@ -99,7 +103,7 @@ The spec template enforces a specific structure designed to constrain LLM output
 - `✅ Focus on WHAT users need and WHY` / `❌ Avoid HOW to implement (no tech stack, APIs, code structure)`
 - `[NEEDS CLARIFICATION]` markers for any unspecified details (prevents LLM guessing)
 - No speculative features — every feature must trace back to a concrete user story
-(`github/spec-kit:spec-driven.md:169-260`)
+(`github/spec-kit:templates/commands/specify.md`; mirrored in `spec-driven.md`. The WHAT/HOW rule lives in the `specify` command template, not in `spec-template.md` itself, which carries the `[NEEDS CLARIFICATION]` markers.)
 
 ### Task Template Structure (`templates/tasks-template.md`)
 
@@ -129,6 +133,8 @@ The constitution is a file of immutable architectural principles that gates ever
 
 Articles IV, V, VI are intentionally left for each project to define.
 
+Note: the shipped `templates/constitution-template.md` is a generic five-slot placeholder (`[PRINCIPLE_1_NAME]` … `[PRINCIPLE_5_NAME]`) — the nine-article canon above is Spec Kit's own constitution as narrated in `spec-driven.md`, not the template's literal content.
+
 ### Spec Persistence Models
 
 Spec Kit documents three official models for how spec artifacts evolve (`github/spec-kit:docs/concepts/spec-persistence.md`):
@@ -139,13 +145,15 @@ Spec Kit documents three official models for how spec artifacts evolve (`github/
 | **Flow-forward** | New feature directory per change; old dirs immutable | Audit trails |
 | **Living spec** | `spec.md` is the only source; plan/tasks are regenerated | Spec-as-contract |
 
-This mirrors terminology from Martin Fowler's article at `martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html` (referenced in `github/spec-kit:docs/concepts/spec-persistence.md`), which frames the lifecycle as: Spec-first → Spec-anchored → Spec-as-source.
+This mirrors terminology from Birgitta Böckeler's article on Martin Fowler's site, `martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html` (referenced in `github/spec-kit:docs/concepts/spec-persistence.md`), which frames three implementation levels: Spec-first → Spec-anchored → Spec-as-source.
 
 ### Supported Agents
 
-As of July 2026, Spec Kit's catalog (`github/spec-kit:integrations/catalog.json`) supports **35 agents**, including:
+As of the verification date, Spec Kit's README describes support for **30+ agents**. The exact list is release-dependent; run `specify integration list` in the installed version rather than relying on a static count.
 
-Claude Code, Cline, GitHub Copilot, Gemini CLI, Cursor, Codex CLI, Devin, opencode, Qwen Code, Junie (JetBrains), Auggie, Amp, Zed, Goose (Block), Grok Build (xAI), RovoDev (Atlassian), IBM Bob, Trae, Tabnine, Kilo Code, Kimi Code (Moonshot AI), ZCode (Z.AI), Hermes (Nous Research), Windsurf (via generic), Antigravity, Mistral Vibe, Firebender (Android Studio), and a `generic` integration for any agent.
+Claude Code, Cline, GitHub Copilot, Gemini CLI, Cursor, Codex CLI, Devin, opencode, Qwen Code, Junie (JetBrains), Auggie, Amp, Zed, Goose (Block), Grok Build (xAI), RovoDev (Atlassian), IBM Bob, Trae, Tabnine, Kilo Code, Kimi Code (Moonshot AI), ZCode (Z.AI), Hermes (Nous Research), Antigravity, Mistral Vibe, Firebender (Android Studio), and a `generic` integration for any agent.
+
+Windsurf is **not** in the current catalog: the integration was retired ("absorbed into Cognition Devin", `github/spec-kit:CHANGELOG.md` #3213). Use the `generic` integration for it.
 
 ---
 
@@ -156,11 +164,13 @@ Claude Code, Cline, GitHub Copilot, Gemini CLI, Cursor, Codex CLI, Devin, openco
 **Website:** [agents.md](https://agents.md)
 **Repository:** [`agentsmd/agents.md`](https://github.com/agentsmd/agents.md)
 
-AGENTS.md is an **open, vendor-neutral standard** for providing instructions to AI coding agents — described as *"a README for agents: a dedicated, predictable place to provide context and instructions to help AI coding agents work on your project."*
+AGENTS.md is an **open, vendor-neutral format/convention** for providing instructions to AI coding agents — described as *"a README for agents: a dedicated, predictable place to provide context and instructions to help AI coding agents work on your project."*
 
 (`agentsmd/agents.md:README.md:1-5`)
 
 > *"Think of AGENTS.md as a README for agents."*
+
+As of 2026 the format is stewarded by the Agentic AI Foundation under the Linux Foundation.
 
 ### How It Differs from README.md
 
@@ -194,7 +204,7 @@ The reference example from `agentsmd/agents.md:README.md:16-46`:
 - **OpenAI Codex CLI** — reads AGENTS.md natively; Codex's own AGENTS.md in `openai/codex` is extensive (`openai/codex:AGENTS.md`)
 - **GitHub Copilot** — explicitly supports AGENTS.md as one of its three custom instruction types; nearest ancestor in the directory tree takes precedence (source: GitHub Docs, fetched 2026-07-20)
 - **Cline** — reads `AGENTS.md` at project root and `~/.agents/AGENTS.md` for global rules (`cline/cline:docs/customization/cline-rules.mdx`)
-- **Spec Kit** — the `github/spec-kit` repo itself ships an `AGENTS.md` (21 KB) for agent contributors working on the toolkit (`github/spec-kit:AGENTS.md`)
+- **Spec Kit** — the `github/spec-kit` repo itself ships an `AGENTS.md` (~25 KB) for agent contributors working on the toolkit (`github/spec-kit:AGENTS.md`)
 
 GitHub's docs explicitly state: *"You can create one or more AGENTS.md files, stored anywhere within the repository. When Copilot is working, the nearest AGENTS.md file in the directory tree will take precedence."* — [GitHub Docs on custom instructions](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions), fetched 2026-07-20.
 
@@ -207,13 +217,7 @@ GitHub's docs explicitly state: *"You can create one or more AGENTS.md files, st
 **Tool:** [Claude Code](https://github.com/anthropics/claude-code) CLI by Anthropic
 **File:** `CLAUDE.md` (at project root, or `.claude/CLAUDE.md`)
 
-Claude Code reads a **4-level memory hierarchy**:
-1. **Enterprise** — `/Library/Application Support/ClaudeCode/CLAUDE.md` (org-wide)
-2. **Project** — `CLAUDE.md` at repository root (team-shared)
-3. **User** — `~/.claude/CLAUDE.md` (personal preferences across all projects)
-4. **Sub-directory** — `.claude/` directory files
-
-(Source: community CLAUDE.md examples, e.g. `VAMFI/claude-user-memory:CLAUDE.md`)
+Claude Code's current first-party documentation distinguishes managed policy, user, project, and local instructions. Project guidance can live in `./CLAUDE.md` or `./.claude/CLAUDE.md`; `CLAUDE.local.md` is a gitignored project-local option. Managed locations are OS-specific. Nested `CLAUDE.md` files and `.claude/rules/` support more targeted guidance. See [Claude Code memory documentation](https://code.claude.com/docs/en/memory).
 
 **What a well-structured CLAUDE.md contains** (from real-world example `pdfme/pdfme:CLAUDE.md`):
 
@@ -253,9 +257,7 @@ npm run lint        # Lint
 **Tool:** [Cursor](https://cursor.sh/) AI code editor
 **File evolution:** Legacy `.cursorrules` → Modern `.cursor/rules/*.mdc`
 
-**Community resource:** [`PatrickJS/awesome-cursorrules`](https://github.com/PatrickJS/awesome-cursorrules) (the largest curated collection)
-
-Modern Cursor uses **`.mdc` (Markdown with Config)** files in `.cursor/rules/`:
+Modern Cursor uses **`.mdc` (Markdown with Config)** files in `.cursor/rules/` (plain `.md` rule files are also supported; `.mdc` adds frontmatter control):
 
 ```markdown
 ---
@@ -275,28 +277,23 @@ alwaysApply: false
 - `globs` — file patterns where the rule auto-attaches
 - `alwaysApply: false` — keeps rule scoped to matching context; `true` for universal guidance
 
-(Source: `PatrickJS/awesome-cursorrules:README.md`, fetched 2026-07-20)
+(Source: [Cursor Rules documentation](https://docs.cursor.com/context/rules). `.cursorrules` remains supported but is deprecated.)
 
 Cline also automatically detects `.cursorrules` files for compatibility (`cline/cline:docs/customization/cline-rules.mdx`).
 
 ---
 
-### 3c. `.windsurfrules` (Windsurf / Codeium)
+### 3c. Windsurf / Devin Desktop rules
 
-**Tool:** [Windsurf](https://codeium.com/windsurf) IDE by Codeium
-**File:** `.windsurfrules` at project root (also `.windsurfrules.md` variant seen in the wild)
-
-Windsurf rules follow a similar convention to `.cursorrules` — a flat markdown file at the project root containing agent behavior instructions. From community examples (`mrbizarro/phosphene:.windsurfrules`; `Rick-te-Molder/bfsi-insights:.windsurfrules`):
+**Current rule locations:** `.devin/rules/*.md` is preferred; `.windsurf/rules/*.md` is supported as a fallback. The legacy root `.windsurfrules` file is still read. Rules may also be inferred from `AGENTS.md`.
 
 ```markdown
-# BFSI Insights Coding Practices (.windsurfrules)
-Project-specific rules for AI assistants (Windsurf/Cursor).
-These rules exist because bugs, incidents, and CI failures happened.
-
-**Quality System**: This file implements controls from [docs/architecture/quality-system.md].
+# API rules
+- Validate requests before accessing persistence.
+- Keep error responses compatible with `contracts/openapi.yaml`.
 ```
 
-Cline also automatically detects `.windsurfrules` files (`cline/cline:docs/customization/cline-rules.mdx`).
+Each workspace rule has its own activation mode. See [Windsurf/Devin Desktop rules documentation](https://docs.devin.ai/desktop/cascade/memories). Treat the legacy `.windsurfrules` form as compatibility-only, not the recommended format.
 
 ---
 
@@ -373,9 +370,7 @@ paths:
 
 ### What It Is
 
-Amazon Kiro is a spec-driven AI IDE/agent launched by AWS in July 2025. Its differentiating feature is that it natively enforces a 3-phase spec workflow before any code is written. This is not an add-on but the default mode of operation.
-
-(Source: analysis of `IsHexx/system-prompts-and-models-of-ai-tools-chinese:Kiro/Spec_Prompt.txt`, which contains Kiro's full system prompt; `hscale/ai-instructions-template:ai-agents/spec-agent.md`)
+Amazon Kiro offers a first-party specs workflow for requirements, design, tasks, and execution. Its current documentation also offers feature, bug-fix, and quick-spec variants, so it is inaccurate to say every workflow enforces approval gates before code is written. See [Kiro Specs documentation](https://kiro.dev/docs/specs/).
 
 ### Kiro's Directory Structure
 
@@ -391,18 +386,16 @@ Amazon Kiro is a spec-driven AI IDE/agent launched by AWS in July 2025. Its diff
 └── settings/
     └── mcp.json
 ```
-(Source: `IsHexx/system-prompts-and-models-of-ai-tools-chinese:Kiro/Spec_Prompt.txt:224-237`)
+(Source: [Kiro Specs documentation](https://kiro.dev/docs/cli/v3/specs/).)
 
 ### Kiro's Spec Workflow
 
-Kiro uses a **3-phase iterative workflow** with mandatory human approval gates (`Kiro/Spec_Prompt.txt:319-615`):
+Kiro's feature specs use requirements, design, tasks, and execution. Requirements-first and design-first workflows include review/refinement between phases; Quick Spec is intentionally lighter-weight. The files are editable, and the agent respects edits.
 
 **Phase 1: Requirements Gathering**
 - Generates `requirements.md` with EARS (Easy Approach to Requirements Syntax) format
 - Each requirement: user story + numbered acceptance criteria
 - Format: `WHEN [event] THEN [system] SHALL [response]`
-- Must ask: *"Do the requirements look good? If so, we can move on to the design."*
-- MUST NOT proceed without explicit approval
 
 ```markdown
 # Requirements Document
@@ -417,17 +410,20 @@ Kiro uses a **3-phase iterative workflow** with mandatory human approval gates (
 **Phase 2: Design Document**
 - Creates `design.md` with mandatory sections: Overview, Architecture, Components and Interfaces, Data Models, Error Handling, Testing Strategy
 - Uses Mermaid for diagrams where applicable
-- Must ask: *"Does the design look good? If so, we can move on to the implementation plan."*
 
 **Phase 3: Task List**
-- Creates `tasks.md` — a numbered checkbox list, maximum 2 levels of hierarchy
-- Each task references specific requirements from `requirements.md`
-- Format: `- [ ] 1. Set up project structure and core interfaces` with `_Requirements: 1.1_`
-- Only includes coding tasks (no deployment, user testing, business process tasks)
-- Prioritizes test-driven development
-- Must stop workflow here — implementation is separate
+- (recovered prompt) Creates `tasks.md` — a numbered checkbox list, maximum 2 levels of hierarchy
+- (recovered prompt) Each task references specific requirements from `requirements.md`
+- (recovered prompt) Format: `- [ ] 1. Set up project structure and core interfaces` with `_Requirements: 1.1_`
+- (recovered prompt) Only includes coding tasks (no deployment, user testing, business process tasks)
+- (recovered prompt) Prioritizes test-driven development
+- Execution runs the planned tasks with verification between tasks.
+- Granularity rules marked *(recovered prompt)* above come from the recovered `Spec_Prompt.txt`; current first-party docs (kiro.dev/docs/specs) confirm discrete, dependency-ordered tasks with checkbox status, but not these specific rules.
 
 **Kiro EARS keyword usage** (from Spec_Prompt.txt:374-400):
+
+First-party docs confirm only `WHEN [condition/event] THE SYSTEM SHALL [response]` (plus `SHALL CONTINUE TO` in bugfix specs); the IF / WHEN…AND variants below are unverified against kiro.dev.
+
 ```
 WHEN [event] THEN [system] SHALL [response]
 IF [precondition] THEN [system] SHALL [response]
@@ -440,10 +436,11 @@ Steering files are Kiro's equivalent of `.cursorrules` / `CLAUDE.md` (`Spec_Prom
 
 > *"Steering allows for including additional context and instructions in all or some of the user interactions with Kiro. Common uses: standards and norms for a team, useful information about the project, additional information how to achieve tasks."*
 
-Three inclusion modes:
+Inclusion modes (first-party docs now list four):
 - **Always** (default): included in every interaction
 - **File-match** (`inclusion: fileMatch`, `fileMatchPattern: 'README*'`): included when matching files are in context
 - **Manual** (`inclusion: manual`): only when user explicitly references via `#` in chat
+- **Auto** (`inclusion: auto`): matched semantically by name + description (added to the docs after this report's first pass)
 
 Steering files support `#[[file:<relative_file_name>]]` references to pull in external specs (e.g. OpenAPI specs).
 
@@ -454,9 +451,9 @@ Steering files support `#[[file:<relative_file_name>]]` references to pull in ex
 | Deployment | Native IDE (AWS product) | CLI tool + any agent |
 | Spec format | requirements.md (EARS) + design.md + tasks.md | spec.md + plan.md + tasks.md |
 | Requirements syntax | EARS (WHEN/IF/THEN/SHALL) | FR-001 MUST/SHOULD + Given/When/Then |
-| Gate mechanism | Built-in userInput tool with `spec-requirements-review`, `spec-design-review`, `spec-tasks-review` | Manual approval + `/speckit.clarify`, `/speckit.checklist`, `/speckit.analyze` |
+| Gate mechanism | Built-in userInput tool with `spec-requirements-review`, `spec-design-review`, `spec-tasks-review` (mechanism names from the recovered prompt; unverified in first-party docs — the docs confirm review/approval gates exist between phases, not these tool names) | Manual approval + `/speckit.clarify`, `/speckit.checklist`, `/speckit.analyze` |
 | Constitutional governance | Via Steering files | Via constitution.md template |
-| Agent support | Kiro's own agent | 35+ agents |
+| Agent support | Kiro surfaces | 30+ agents (exact list is release-dependent) |
 
 ---
 
@@ -474,15 +471,13 @@ Several community projects build on or reference the SDD methodology:
 
 - **`joaoariedi/ai-assisted-development-framework`**: *"A systematic Claude Code configuration for spec-driven development (SDD) with quality gates, custom agents, automated hooks, security guardrails, and a full specification pipeline."*
 
-- **`lu-valencia/Introducing-SDD`**: Presentation repo: *"Transition from 'vibe coding' to structured agentic workflows where intent is the source of truth."*
-
 ### "Vibe Coding" as the Anti-Pattern
 
 A recurring theme in the SDD community (2025-2026) is positioning SDD as the opposite of "vibe coding" — the practice of issuing freeform natural language prompts to AI agents without structured specifications. The spec-kit README explicitly frames this contrast (`github/spec-kit:README.md:39-41`), and multiple community repos use "vibe coding" in their descriptions as the problem being solved.
 
 ### Martin Fowler Article Reference
 
-The `github/spec-kit:docs/concepts/spec-persistence.md` document directly references a Martin Fowler article at `martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html`, framing the spec lifecycle in three levels: **Spec-first** (write spec, then discard), **Spec-anchored** (keep spec after implementation), and **Spec-as-source** (spec is the only human-edited artifact; code is regenerated).
+The `github/spec-kit:docs/concepts/spec-persistence.md` document directly references Birgitta Böckeler's article (on martinfowler.com) at `martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html`, framing three spec implementation levels: **Spec-first** (write spec, then discard), **Spec-anchored** (keep spec after implementation), and **Spec-as-source** (spec is the only human-edited artifact; code is regenerated).
 
 ### GitHub Blog — "Spec Converts to Production Code in Minutes" (May 2025)
 
@@ -540,7 +535,7 @@ Drawing on the documented best practices across all tools:
 
 ### 6c. Constitutional Governance
 
-- A project **constitution** (equivalent to `.kiro/steering/` or `.github/copilot-instructions.md`) provides immutable architectural principles
+- A project **constitution** can provide durable architectural principles. Keep it version-controlled and change it deliberately; it is governance guidance, not an enforcement mechanism. Agent instruction files and steering files serve related but tool-specific purposes.
 - Gates built into the plan template enforce compliance before any implementation:
   - Simplicity Gate: ≤3 projects? No future-proofing?
   - Anti-Abstraction Gate: Using framework directly? Single model representation?
@@ -586,13 +581,13 @@ Best practice from Kiro and Spec Kit alike:
 
 | Tool | Instruction File | Location | Format | Notes |
 |---|---|---|---|---|
-| Claude Code | `CLAUDE.md` | Repo root, `~/.claude/`, enterprise path | Markdown | 4-level hierarchy; 21 KB pdfme example |
+| Claude Code | `CLAUDE.md` | Repo root, `~/.claude/`, enterprise path | Markdown | 4-level hierarchy; 14 KB pdfme example |
 | GitHub Copilot | `copilot-instructions.md` | `.github/copilot-instructions.md` | Markdown | ≤2 pages recommended |
 | GitHub Copilot (path-specific) | `NAME.instructions.md` | `.github/instructions/` | Markdown + frontmatter | `applyTo:` glob filter |
 | GitHub Copilot (agent) | `AGENTS.md` | Anywhere in repo | Markdown | Nearest ancestor wins |
 | Cursor | `.cursorrules` (legacy) | Repo root | Markdown | Being superseded |
 | Cursor | `*.mdc` | `.cursor/rules/` | Markdown + frontmatter | `description`, `globs`, `alwaysApply` |
-| Windsurf | `.windsurfrules` | Repo root | Markdown | Codeium's equivalent to `.cursorrules` |
+| Windsurf / Devin Desktop | `.devin/rules/*.md` (preferred), `.windsurf/rules/*.md` (fallback) | Workspace or subdirectories | Markdown | Root `.windsurfrules` remains legacy-compatible |
 | Cline | `*.md` or `*.txt` | `.clinerules/` directory | Markdown ± frontmatter | `paths:` for conditional activation |
 | Amazon Kiro | Steering files | `.kiro/steering/*.md` | Markdown + frontmatter | `inclusion: always/fileMatch/manual` |
 | Amazon Kiro | Spec files | `.kiro/specs/{feature}/` | Markdown | requirements.md, design.md, tasks.md |
@@ -619,20 +614,12 @@ Best practice from Kiro and Spec Kit alike:
 
 ---
 
-## Gaps and Uncertainties
+## Limitations and maintenance notes
 
-1. **Martin Fowler article** (`martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html`) — access was denied; the article exists (referenced in Spec Kit's own docs) but its full contents could not be fetched.
+1. **No adoption claim.** The sources demonstrate available tools and documented workflows, not that SDD is dominant or that it improves outcomes for every project. Treat the methodology as a practice to trial and measure in your own delivery context.
 
-2. **Official Kiro documentation** — No public Kiro docs repository was found at `aws/kiro-docs`. The Kiro system prompt analysis (from `IsHexx/system-prompts-and-models-of-ai-tools-chinese`) is authoritative (contains the actual system prompt) but the official docs site `kiro.dev` was inaccessible during research.
+2. **Version-sensitive facts.** Command names, integration counts, rule locations, and approval behavior are product details that change independently. Prefer each vendor's official docs, and record the version/date when a project depends on a particular behavior.
 
-3. **Anthropic's official CLAUDE.md docs** — `code.claude.com/docs/en/memory` and `docs.anthropic.com/en/docs/claude-code/memory` were inaccessible. The CLAUDE.md convention is well-attested through community examples and integration behavior.
+3. **Evidence quality.** The report now relies on official documentation for Spec Kit, AGENTS.md, Claude Code, Cursor, Kiro, Windsurf/Devin Desktop, and GitHub Copilot where available. Community collections are useful examples, but not evidence of supported behavior. Recovered system prompts must not be treated as authoritative.
 
-4. **Official Cursor rules docs** (`docs.cursor.com/context/rules`) — inaccessible. Documentation was reconstructed from the `PatrickJS/awesome-cursorrules` community source.
-
-5. **Official Windsurf rules docs** (`docs.codeium.com/windsurf/context/rules`) — inaccessible. Windsurf rules documented through community `.windsurfrules` examples.
-
-6. **GitHub Blog announcement for Spec Kit** — Multiple URL patterns tried; no official launch blog post found. The repo was active as of the current research date (July 2026) with the `acknowledgements` section crediting John Lam.
-
-7. **Tessl** — The URL `tessl.io` was inaccessible during research. Tessl is a company building a "code-less" development platform with AI; further research would require a working fetch.
-
-8. **Spec Kit star count** — The GitHub API did not return star count in the searched form; the repo is actively maintained (3,526+ issues/PRs based on commit message numbers) and appears to have significant adoption (the Chinese fork alone has 263 stars).
+4. **Rebuildability is conditional.** A passing test suite only validates the behavior it covers. Faithful reconstruction may additionally require schemas, API contracts, fixtures, migration history, deployment/configuration, observability requirements, and human review of security-sensitive behavior.

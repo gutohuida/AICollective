@@ -22,6 +22,7 @@ Planned sections, added when there's something real to put in them: `prompts/`,
 |---|---|
 | [`handoff`](skills/handoff/) | Write a durable, structured handoff file to disk before `/clear` or `/compact`, so session state survives a context reset. |
 | [`resume`](skills/resume/) | Rehydrate from a handoff file, verify it still matches the repo, and continue the work. |
+| [`html-spec`](skills/html-spec/) | Audit and improve an HTML specification, or write one from scratch — testable requirements with stable IDs, traceability from requirement to task, and a bundled structural validator. |
 
 `handoff` and `resume` are a pair. The idea behind them: the file on disk is the real
 memory and the context window is scratch space. In-place summarization is lossy and
@@ -40,6 +41,11 @@ directories, and Codex only reads user-level ones. `skills/install.sh` handles t
 Because they don't name any vendor-specific command, a session handed off under one agent
 can be resumed under another. See [`skills/README.md`](skills/README.md) for the full
 discovery table and manual install.
+
+`html-spec` is the applied end of [`ResearchClub/`](ResearchClub/): the conventions the
+research validated, packaged as a rubric an agent can run against a real document —
+plus `validate.py`, which catches the structural failures (dead anchors, untraced tasks,
+external resources, an approved spec with open questions) that a careful read usually misses.
 
 ## Contributing
 
