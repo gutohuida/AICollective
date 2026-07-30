@@ -11,7 +11,7 @@ long explanation to be useful, that explanation lives next to it.
 | Section | Contents |
 |---|---|
 | [`skills/`](skills/) | Claude Code skills (`/slash-command` workflows) |
-| [`ResearchClub/`](ResearchClub/) | Research on building software with AI agents: spec-driven development, the spec-first vs. incremental question, and a `spec-rebuild` skill. |
+| [`ResearchClub/`](ResearchClub/) | Research on building software with AI agents: spec-driven development, the spec-first vs. incremental question, agent operating models, the docs→tickets→code→review delivery pipeline, and a `spec-rebuild` skill. |
 
 Planned sections, added when there's something real to put in them: `prompts/`,
 `agents/` (subagent definitions), `configs/` (settings, hooks, MCP servers), `notes/`.
